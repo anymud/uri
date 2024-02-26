@@ -1,6 +1,6 @@
 import { URLSearchParams, URL } from 'url';
 
-interface URLParams {
+export interface URLParams {
     hostname: string;
     pathname: string;
     search: string;
