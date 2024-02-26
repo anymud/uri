@@ -1,0 +1,37 @@
+{
+  "name": "@anymud/uri",
+  "author": "Kyle Tse <shtse8@gmail.com>",
+  "version": "v0.0.3",
+  "scripts": {
+    "test": "bun test",
+    "build": "bun build.ts"
+  },
+  "description": "uri",
+  "license": "MIT",
+  "repository": "https://github.com/anymud/uri",
+  "private": false,
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "@anymud/bun-plugin-dts": "^1.0.2",
+    "@anymud/utils": "^0.0.2",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "keywords": []
+}
