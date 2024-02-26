@@ -206,7 +206,7 @@ export type QueryMergeMode = 'replace' | 'append';
  * @param query1 The first query string
  * @param query2 The second query string
  * @param mode The merge mode
- * @returns A new query string with the merged parameters
+ * @returns The modified query string from query1
  */
 export function mergeURLSearchParams(query1: URLSearchParamsInput, query2: URLSearchParamsInput, mode: QueryMergeMode = 'replace'): URLSearchParams {
     const q1 = toURLSearchParams(query1);
@@ -218,7 +218,12 @@ export function mergeURLSearchParams(query1: URLSearchParamsInput, query2: URLSe
     return q1;
 }
 
-
+/**
+ * Apply URLSearchParams to a URL
+ * @param url The URL to apply the search params to
+ * @param search The search params to apply
+ * @returns The modified URL from url
+ */
 export function applyURLSearchParams(url: URLInput, search: URLSearchParamsInput): URL {
     const u = toURL(url);
     u.search = mergeURLSearchParams(u.search, search).toString();
