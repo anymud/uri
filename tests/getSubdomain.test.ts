@@ -1,53 +1,46 @@
-import { getSubdomain } from '~'; // Adjust the import path to where your function is defined
 import { describe, it, expect } from 'bun:test';
+import { getSubdomain } from '~'; // Update the import path
 
-// Mock known TLDs for testing purposes
-const mockKnownTlds = ['com', 'org', 'net'];
+// Example list of known TLDs for testing
+const KnownTlds = ['com', 'org', 'net', 'co.uk'];
 
 describe('getSubdomain function', () => {
-
-  it('should extract the subdomain from a simple URI string', () => {
-    const uri = 'http://subdomain.example.com';
-    const expected = 'subdomain';
-    const result = getSubdomain(uri, mockKnownTlds);
-    expect(result).toBe(expected);
+  it('extracts subdomain from a URL with a common TLD', () => {
+    const url = 'http://sub.example.com';
+    const subdomain = getSubdomain(url, KnownTlds);
+    expect(subdomain).toBe('sub');
   });
 
-  it('should handle complex URI with multiple subdomains', () => {
-    const uri = 'http://a.b.subdomain.example.com';
-    const expected = 'a.b.subdomain';
-    const result = getSubdomain(uri, mockKnownTlds);
-    expect(result).toBe(expected);
+  it('returns an empty string when URL has no subdomain', () => {
+    const url = 'http://example.com';
+    const subdomain = getSubdomain(url, KnownTlds);
+    expect(subdomain).toBe('');
   });
 
-  it('should return an empty string if no subdomain is present', () => {
-    const uri = 'http://example.com';
-    const expected = '';
-    const result = getSubdomain(uri, mockKnownTlds);
-    expect(result).toBe(expected);
+  it('correctly identifies subdomains with a complex TLD', () => {
+    const url = 'http://sub.example.co.uk';
+    const subdomain = getSubdomain(url, KnownTlds);
+    expect(subdomain).toBe('sub');
   });
 
-  it('should process URI components object with subdomain', () => {
-    const uriComponents = {
-      scheme: 'http',
-      authority: 'subdomain.example.com',
-      host: 'subdomain.example.com'
-    };
-    const expected = 'subdomain';
-    const result = getSubdomain(uriComponents, mockKnownTlds);
-    expect(result).toBe(expected);
+  it('handles URLs with multiple subdomain levels', () => {
+    const url = 'http://a.b.c.example.com';
+    const subdomain = getSubdomain(url, KnownTlds);
+    expect(subdomain).toBe('a.b.c');
   });
 
-  it('should return empty string for URI components object without subdomain', () => {
-    const uriComponents = {
-      scheme: 'http',
-      authority: 'example.com',
-      host: 'example.com'
-    };
-    const expected = '';
-    const result = getSubdomain(uriComponents, mockKnownTlds);
-    expect(result).toBe(expected);
+  it('throws an error for URLs without a recognized TLD', () => {
+    const url = 'http://example.unknown';
+    const testFn = () => getSubdomain(url, KnownTlds);
+    expect(testFn).toThrow('Top-level domain not found in the host.');
   });
 
-  // Add more tests as needed to cover edge cases, different schemes, ports, etc.
+  // Testing with URLInput types other than string, like URL object
+  it('works with URL object input', () => {
+    const url = new URL('http://sub.example.com');
+    const subdomain = getSubdomain(url, KnownTlds);
+    expect(subdomain).toBe('sub');
+  });
+
+  // Add more tests as needed to cover additional edge cases or scenarios
 });

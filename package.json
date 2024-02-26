@@ -1,5 +1,5 @@
 {
-  "name": "@anymud/uri",
+  "name": "@anymud/url",
   "author": "Kyle Tse <shtse8@gmail.com>",
   "version": "0.1.4",
   "scripts": {
@@ -7,7 +7,7 @@
     "build": "bun build.ts",
     "release": "release-it"
   },
-  "description": "A JavaScript library for parsing, resolving, and stringifying Uniform Resource Identifiers (URIs).",
+  "description": "A comprehensive URL manipulation library, offering easy subdomain, path, host adjustments, and search parameters merging.",
   "license": "MIT",
   "repository": "https://github.com/anymud/uri",
   "private": false,

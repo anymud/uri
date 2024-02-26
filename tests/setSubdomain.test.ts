@@ -1,66 +1,53 @@
-import { setSubdomain } from '~'; // Adjust the import path to where your function is defined
 import { describe, it, expect } from 'bun:test';
+import { setSubdomain } from '~'; // Adjust the import path accordingly
+
+// Example list of known TLDs for testing
+const KnownTlds = ['com', 'org', 'net', 'co.uk'];
 
 describe('setSubdomain function', () => {
-  it('should set the subdomain for a URI components object without an existing subdomain', () => {
-    const components = {
-      scheme: 'https',
-      host: 'example.com'
-    };
-    const subdomain = 'blog';
-    const expected = {
-      ...components,
-      host: 'blog.example.com',
-      isUrn: false,
-    };
-    const result = setSubdomain(components, subdomain);
-    expect(result).toEqual(expected);
+  it('sets the subdomain for a URL without an existing subdomain', () => {
+    const url = 'http://example.com';
+    const newSubdomain = 'blog';
+    const result = setSubdomain(url, newSubdomain, KnownTlds);
+    expect(result.hostname).toBe('blog.example.com');
   });
 
-  it('should replace the subdomain for a URI components object with an existing subdomain', () => {
-    const components = {
-      scheme: 'https',
-      host: 'blog.example.com'
-    };
-    const subdomain = 'news';
-    const expected = {
-      ...components,
-      host: 'news.example.com',
-      isUrn: false,
-    };
-    const result = setSubdomain(components, subdomain);
-    expect(result).toEqual(expected);
+  it('replaces an existing subdomain with a new one', () => {
+    const url = 'http://sub.example.com';
+    const newSubdomain = 'blog';
+    const result = setSubdomain(url, newSubdomain, KnownTlds);
+    expect(result.hostname).toBe('blog.example.com');
   });
 
-  it('should remove the subdomain if an empty string is provided', () => {
-    const components = {
-      scheme: 'https',
-      host: 'blog.example.com'
-    };
-    const subdomain = '';
-    const expected = {
-      ...components,
-      host: 'example.com',
-      isUrn: false,
-    };
-    const result = setSubdomain(components, subdomain);
-    expect(result).toEqual(expected);
+  it('removes the subdomain when an empty string is provided', () => {
+    const url = 'http://sub.example.com';
+    const newSubdomain = '';
+    const result = setSubdomain(url, newSubdomain, KnownTlds);
+    expect(result.hostname).toBe('example.com');
   });
 
-  it('should correctly handle complex subdomains', () => {
-    const components = {
-      scheme: 'https',
-      host: 'a.b.example.com'
-    };
-    const subdomain = 'c.d';
-    const expected = {
-      ...components,
-      host: 'c.d.example.com',
-      isUrn: false,
-    };
-    const result = setSubdomain(components, subdomain);
-    expect(result).toEqual(expected);
+  it('correctly handles URLs with complex TLDs', () => {
+    const url = 'http://sub.example.co.uk';
+    const newSubdomain = 'blog';
+    const result = setSubdomain(url, newSubdomain, KnownTlds);
+    expect(result.hostname).toBe('blog.example.co.uk');
   });
 
-  // Add more tests as needed for edge cases, like handling of ports, paths, queries, fragments, etc.
+  it('throws an error for URLs without a recognized TLD', () => {
+    const url = 'http://example.unknown';
+    const newSubdomain = 'blog';
+    const testFn = () => setSubdomain(url, newSubdomain, KnownTlds);
+    expect(testFn).toThrow('Top-level domain not found in the host.');
+  });
+
+  // Consider adding tests for input types other than string, if your toURL function supports it
+  // For example, testing with a URL object as input
+  it('works with URL object input', () => {
+    const url = new URL('http://sub.example.com');
+    const newSubdomain = 'blog';
+    const result = setSubdomain(url, newSubdomain, KnownTlds);
+    expect(result.hostname).toBe('blog.example.com');
+  });
+
+  // Add more tests as needed to cover additional edge cases or scenarios
 });
