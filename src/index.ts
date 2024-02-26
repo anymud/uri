@@ -226,3 +226,25 @@ function removeDotSegments(path: string | undefined): string {
   }
   return result;
 }
+
+type RequiredComponent<T extends keyof UriComponents> = Required<Pick<UriComponents, T>>;
+const knownTlds = [
+    'com', 'org', 'net', 'int', 'edu', 'gov', 'mil', 
+    'co.uk', 'org.uk', 'gov.uk', 'ltd.uk', 'plc.uk', 
+    'me.uk', 'com.au', 'net.au', 'org.au', 'de', 'ca',
+    'us', 'eu', 'es', 'it', 'fr', 'nl', 'be', 'at', 'dk',
+    'ch', 'se', 'no', 'fi', 'jp', 'cn', 'in', 'ru', 'br',
+    'au', 'info', 'name', 'io', 'xxx', 'id', 'me', 'mobi',
+    'cc', 'ws', 'fm', 'tv', 'tk', 'nu', 'jp', 'cn', 'in',
+    'ru', 'br', 'au', 'info', 'name', 'io', 'xxx', 'id',
+    'me', 'mobi'
+  ];
+export function getSubdomain(components: RequiredComponent<'host'>, tlds: string[] = knownTlds): string {
+    const host = components.host;
+    const parts = host.split('.');
+    if (parts.length <= 2) return '';
+    if (tlds.includes(parts[parts.length - 2])) {
+        return parts.slice(0, -2).join('.');
+    }
+    return parts.slice(0, -1).join('.');
+}
