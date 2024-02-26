@@ -5,7 +5,7 @@
   "scripts": {
     "test": "bun test",
     "build": "bun build.ts",
-    "release": "release-it"
+    "release": "bun run test & bun run build & release-it"
   },
   "description": "A comprehensive URL manipulation library, offering easy subdomain, path, host adjustments, and search parameters merging.",
   "license": "MIT",
