@@ -367,3 +367,33 @@ export function setHost(components: UriComponentsInput, host: string): UriCompon
         host,
     };
 }
+
+
+/** 
+ * Merge query parameters
+ * @param query1 The first query string
+ * @param query2 The second query string
+ * @param mode The merge mode
+ * @returns A new query string with the merged parameters
+ */
+export function mergeQuery(query1: URLSearchParams, query2: URLSearchParams, mode: 'replace' | 'append' = 'replace') {
+    const merged = new URLSearchParams(query1); // Clone the first query to preserve its values
+
+    // Iterate through all entries of the second query
+    for (const [key, value] of query2.entries()) {
+      if (mode === 'replace') {
+        // If the mode is replace, set/overwrite the key in the merged query
+        merged.set(key, value);
+      } else if (mode === 'append') {
+        // If the mode is append and the key already exists, append the value
+        if (merged.has(key)) {
+          merged.append(key, value);
+        } else {
+          // If the key doesn't exist, just set it
+          merged.set(key, value);
+        }
+      }
+    }
+  
+    return merged;
+}
