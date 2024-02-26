@@ -44,6 +44,10 @@ This function resolves a relative URI against a base URI and returns the resulti
 
 Converts a URI components object into a URI string.
 
+#### `getSubdomain(components: RequiredComponent<'host'>): string`
+
+Extracts the subdomain from the host component of a URI.
+
 ### Example
 
 ```javascript
