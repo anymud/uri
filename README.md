@@ -1,15 +1,77 @@
-# @anymud/url
+# @anymud/uri
 
-To install dependencies:
+A lightweight JavaScript library for handling Uniform Resource Identifiers (URIs) efficiently.
 
-```bash
-bun install
+## Installation
+
+You can install the `@anymud/uri` package via npm, yarn, pnpm or bun:
+
+```console
+# npm
+npm install @anymud/uri
+
+#yarn
+yarn add @anymud/uri
+
+# pnpm
+npm install @anymud/uri
+
+# bun
+bun install @anymud/uri
 ```
 
-To run:
+## Usage
 
-```bash
-bun run ./dist/index.ts
+### Importing
+
+You can import the library in your JavaScript/TypeScript files as follows:
+
+```javascript
+import * as uri from '@anymud/uri';
 ```
 
-This project was created using `bun init` in bun v1.0.29. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+### Functions
+
+#### `parseUri(uri: string): UriComponents`
+
+This function parses a URI string and returns its components as an object conforming to the `UriComponents` interface.
+
+#### `resolveUri(baseComponents: UriComponentsInput, relativeComponents: UriComponentsInput): UriComponents`
+
+This function resolves a relative URI against a base URI and returns the resulting URI components.
+
+#### `toString(components: UriComponentsInput): string`
+
+Converts a URI components object into a URI string.
+
+### Example
+
+```javascript
+import { parseUri, resolveUri, toString } from '@anymud/uri';
+
+const uriString = 'https://www.example.com/path/to/resource?query=123#fragment';
+const parsedUri = parseUri(uriString);
+console.log(parsedUri);
+
+const baseUri = {
+  scheme: 'https',
+  host: 'www.example.com',
+  path: '/base',
+};
+
+const relativeUri = {
+  path: 'path/to/resource',
+  query: 'query=123',
+  fragment: 'fragment',
+};
+
+const resolvedUri = resolveUri(baseUri, relativeUri);
+console.log(resolvedUri);
+
+const uriString = toString(resolvedUri);
+console.log(uriString);
+```
+
+## License
+
+This library is released under the MIT License. See the [LICENSE](LICENSE) file for details.
