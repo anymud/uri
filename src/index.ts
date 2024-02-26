@@ -228,7 +228,7 @@ function removeDotSegments(path: string | undefined): string {
 }
 
 type RequiredComponent<T extends keyof UriComponents> = Required<Pick<UriComponents, T>>;
-const knownTlds = [
+const KnownTlds = [
     'com', 'org', 'net', 'int', 'edu', 'gov', 'mil', 
     'co.uk', 'org.uk', 'gov.uk', 'ltd.uk', 'plc.uk', 
     'me.uk', 'com.au', 'net.au', 'org.au', 'de', 'ca',
@@ -245,7 +245,7 @@ const knownTlds = [
  * @param components An object containing the required 'host' component.
  * @returns The subdomain extracted from the host component.
  */
-export function getSubdomain(components: RequiredComponent<'host'>, tlds: string[] = knownTlds): string {
+export function getSubdomain(components: RequiredComponent<'host'>, tlds: string[] = KnownTlds): string {
     const host = components.host;
     const parts = host.split('.');
     if (parts.length <= 2) return '';

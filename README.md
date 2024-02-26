@@ -44,9 +44,9 @@ This function resolves a relative URI against a base URI and returns the resulti
 
 Converts a URI components object into a URI string.
 
-#### `getSubdomain(components: RequiredComponent<'host'>): string`
+#### `getSubdomain(components: RequiredComponent<'host'>, tlds: string[] = KnownTlds): string`
 
-Extracts the subdomain from the host component of a URI.
+Extracts the subdomain from the host component of a URI. 
 
 ### Example
 
