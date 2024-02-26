@@ -48,6 +48,8 @@ Converts a URI components object into a URI string.
 
 Extracts the subdomain from the host component of a URI. 
 
+More on: [https://anymud.github.io/uri/](https://anymud.github.io/uri/)
+
 ### Example
 
 ```javascript

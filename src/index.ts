@@ -1,3 +1,6 @@
+/**
+ * A URI components object.
+ */
 export interface UriComponents {
   scheme?: string;
   authority?: string;
@@ -13,6 +16,11 @@ export interface UriComponents {
   isUrn: boolean;
 }
 
+/**
+ * Parses a URI string into its components.
+ * @param uri A URI string to parse
+ * @returns A URI components object representing the given URI.
+ */
 export function parseUri(uri: string): UriComponents {
   const regex = /^(?:([^:/?#]+):)?(?:(\/\/)([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?$/;
   const matches = regex.exec(uri);
@@ -62,8 +70,17 @@ export function parseUri(uri: string): UriComponents {
   };
 }
 
-export type UriComponentsInput = Omit<UriComponents, 'isUrn'> & { isUrn?: boolean }
+export type UriComponentsInput = Omit<UriComponents, 'isUrn'> & { isUrn?: boolean } | string
+
+/**
+ * Converts a URI components object to a URI string.
+ * @param components A uri components object or uri string
+ * @returns A string representation of the given URI components.
+ */
 function resolveUriComponents(components: UriComponentsInput) : UriComponents {
+  if (typeof components === 'string') {
+    return parseUri(components);
+  }
   return {
       scheme: components.scheme,
       authority: components.authority,
@@ -77,6 +94,11 @@ function resolveUriComponents(components: UriComponentsInput) : UriComponents {
   };
 }
 
+/**
+ * Converts a URI components object to a URI string.
+ * @param components A uri components object or uri string
+ * @returns A string representation of the given URI components.
+ */
 export function toString(components: UriComponentsInput): string {
   components = resolveUriComponents(components);
   let uri = '';
@@ -142,6 +164,12 @@ export function toString(components: UriComponentsInput): string {
   return uri;
 }
 
+/**
+ * Resolves a relative URI against a base URI.
+ * @param baseComponents A uri components object or uri string
+ * @param relativeComponents A uri components object or uri string
+ * @returns A new uri components object with the relative URI resolved against the base URI.
+ */
 export function resolveUri(baseComponents: UriComponentsInput, relativeComponents: UriComponentsInput): UriComponents {
   baseComponents = resolveUriComponents(baseComponents);
   relativeComponents = resolveUriComponents(relativeComponents);
@@ -253,4 +281,32 @@ export function getSubdomain(components: RequiredComponent<'host'>, tlds: string
         return parts.slice(0, -2).join('.');
     }
     return parts.slice(0, -1).join('.');
+}
+
+/**
+ * Set the path of a URI.
+ * 
+ * @param components A uri components object or uri string
+ * @param path The new path to set
+ * @returns A new uri components object with the path set to the given value
+ */
+export function setPath(components: UriComponentsInput, path: string): UriComponents {
+    return {
+        ...resolveUriComponents(components),
+        path,
+    };
+}
+
+
+/**
+ * Set the host of a URI.
+ * @param components A uri components object or uri string
+ * @param host The new host to set
+ * @returns A new uri components object with the host set to the given value
+ */
+export function setHost(components: UriComponentsInput, host: string): UriComponents {
+    return {
+        ...resolveUriComponents(components),
+        host,
+    };
 }

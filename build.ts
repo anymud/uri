@@ -2,6 +2,21 @@ import consola from "consola"
 import fs from "fs/promises"
 import path from "path"
 import { dts } from '@anymud/bun-plugin-dts'
+import type { BunPlugin } from "bun"
+import { spawnSync } from "child_process";
+
+type TypedocOptions = {
+    out: string
+}
+function typedoc(options?: TypedocOptions): BunPlugin {
+    return {
+        name: 'typedoc',
+        async setup(build) {
+            const entrypoints = build.config.entrypoints.map(x => ['--entryPoints', x]).flat()
+            const result = spawnSync('bunx', ['typedoc', ...entrypoints], { stdio: 'inherit' })
+        }
+    }
+}
 
 try {
     const distPath ='dist'
@@ -22,6 +37,7 @@ try {
         ],
         plugins: [
             dts(),
+            typedoc()
         ],
         root: './src',
     })
