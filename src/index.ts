@@ -136,7 +136,7 @@ export function setSubdomain(url: URLInput, subdomain: string, tlds: string[] = 
  * @param path The new path to set
  * @returns A new uri components object with the path set to the given value
  */
-export function setPath(url: URLInput, path: string): URL {
+export function setPathname(url: URLInput, path: string): URL {
     const u = toURL(url);
     u.pathname = path;
     return u;
