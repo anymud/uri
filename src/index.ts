@@ -270,11 +270,13 @@ const KnownTlds = [
 
 /**
  * Extracts the subdomain from the host component of a URI.
- * @param components An object containing the required 'host' component.
+ * @param components A uri components object.
  * @returns The subdomain extracted from the host component.
  */
-export function getSubdomain(components: RequiredComponent<'host'>, tlds: string[] = KnownTlds): string {
-    const host = components.host;
+export function getSubdomain(components: UriComponentsInput, tlds: string[] = KnownTlds): string {
+    const c = resolveUriComponents(components);
+    const host = c.host;
+    if (!host) return '';
     const parts = host.split('.');
     if (parts.length <= 2) return '';
     if (tlds.includes(parts[parts.length - 2])) {
