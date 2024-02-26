@@ -1,9 +1,20 @@
 import { URLSearchParams, URL } from 'url';
 
+interface URLParams {
+    hostname: string;
+    pathname: string;
+    search: string;
+    host: string;
+    href: string;
+    password: string;
+    port: string;
+    protocol: string;
+    username: string;
+}
 
 export type URLSearchParamsValue = string | number | boolean | null | undefined | Array<string | number | boolean | null | undefined>;
 export type URLSearchParamsInput = URLSearchParams | Record<string, URLSearchParamsValue> | string;
-export type URLInput = string | URL | { toString(): string };
+export type URLInput = string | URL | { toString(): string } | Partial<URLParams> & ({ protocol: string, host: string } | { protocol: string, hostname: string });
 
 /**
  * Convert a given input to a URL object, resolving against an optional base URL.
@@ -12,26 +23,36 @@ export type URLInput = string | URL | { toString(): string };
  * @returns A new URL object.
  */
 export function toURL(input: URLInput, base?: URLInput): URL {
-  // Convert input or base to a string using toString if they are not already a string or URL.
-  const inputURL = typeof input === 'string' || input instanceof URL ? input : input.toString();
-  let baseURL: URL | string | undefined;
-
-  if (base) {
-    baseURL = typeof base === 'string' || base instanceof URL ? base : base.toString();
-    // If base is provided, use it to resolve the input URL.
-    return new URL(inputURL, baseURL);
-  } else {
-    // If no base is provided and input is a URL object or a valid URL string, return it directly.
-    if (typeof inputURL === 'string') {
-      try {
-        return new URL(inputURL);
-      } catch (error) {
-        throw new Error(`Invalid URL: ${inputURL}`);
-      }
+    if (input instanceof URL) {
+        return input;
     }
-    // If input is already a URL object, just return it.
-    return inputURL;
-  }
+    
+    if (typeof input === 'object' && ('protocol' in input && ('host' in input || 'hostname' in input))) {
+        const { hostname, pathname, search, host, href, password, port, protocol, username } = input;
+        const url = new URL('http://localhost', base ? toURL(base) : undefined);
+        if (protocol) url.protocol = protocol;
+        else throw new Error('Invalid URL');
+        if (hostname) url.hostname = hostname;
+        else if (host) url.host = host;
+        else throw new Error('Invalid URL');
+        if (pathname) url.pathname = pathname;
+        if (search) url.search = search;
+        if (href) url.href = href;
+        if (password) url.password = password;
+        if (port) url.port = port;
+        if (username) url.username = username;
+        return url;
+    }
+    
+    if (typeof input === 'string' || (typeof input === 'object' && typeof input.toString === 'function')) {
+        try {
+            return new URL(input, base ? toURL(base) : undefined);
+        } catch (e) {
+            throw new Error('Invalid URL');
+        }
+    }
+    
+    throw new Error('Invalid URL');
 }
 
 
@@ -195,4 +216,11 @@ export function mergeURLSearchParams(query1: URLSearchParamsInput, query2: URLSe
     }
     q2.forEach((value, key) => q1.append(key, value));
     return q1;
+}
+
+
+export function applyURLSearchParams(url: URLInput, search: URLSearchParamsInput): URL {
+    const u = toURL(url);
+    u.search = mergeURLSearchParams(u.search, search).toString();
+    return u;
 }
