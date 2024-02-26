@@ -16,6 +16,9 @@ export interface UriComponents {
   isUrn: boolean;
 }
 
+export type UriComponentsInput = Omit<UriComponents, 'isUrn'> & { isUrn?: boolean } | string
+
+
 /**
  * Parses a URI string into its components.
  * @param uri A URI string to parse
@@ -70,7 +73,6 @@ export function parseUri(uri: string): UriComponents {
   };
 }
 
-export type UriComponentsInput = Omit<UriComponents, 'isUrn'> & { isUrn?: boolean } | string
 
 /**
  * Converts a URI components object to a URI string.
@@ -277,12 +279,26 @@ export function getSubdomain(components: UriComponentsInput, tlds: string[] = Kn
     const c = resolveUriComponents(components);
     const host = c.host;
     if (!host) return '';
+
+    // Split the host into parts
     const parts = host.split('.');
-    if (parts.length <= 2) return '';
-    if (tlds.includes(parts[parts.length - 2])) {
-        return parts.slice(0, -2).join('.');
+    
+    // Reverse the array to start checking from TLDs
+    const reversedParts = parts.reverse();
+    
+    // Identify the TLD and remove it along with the second-level domain
+    let levelsToRemove = 0;
+    for (let i = 0; i < reversedParts.length; i++) {
+        if (tlds.includes(reversedParts[i]) || i === 1) { // Assuming the SLD (second-level domain) is always there
+            levelsToRemove = i + 2;
+            break;
+        }
     }
-    return parts.slice(0, -1).join('.');
+
+    // Reconstruct the subdomain parts
+    const subdomainParts = reversedParts.slice(levelsToRemove).reverse();
+    
+    return subdomainParts.join('.');
 }
 
 /**
@@ -293,24 +309,35 @@ export function getSubdomain(components: UriComponentsInput, tlds: string[] = Kn
  */
 export function setSubdomain(components: UriComponentsInput, subdomain: string): UriComponents {
     const c = resolveUriComponents(components);
-    const host = c.host;
-    if (!host) return c;
-    const parts = host.split('.');
-    if (parts.length <= 2) {
-        return {
-            ...c,
-            host: subdomain,
-        };
+    
+    // Ensure the host is available to manipulate
+    if (!c.host) {
+        throw new Error('Host component is missing in URI components');
     }
-    if (KnownTlds.includes(parts[parts.length - 2])) {
-        parts.splice(0, parts.length - 2, subdomain);
-    } else {
-        parts.splice(0, parts.length - 1, subdomain);
+    
+      // Extract the domain and any existing subdomains
+    const parts = c.host.split('.');
+    let domain = parts.slice(-2).join('.'); // Assume the top-level domain consists of two parts (e.g., example.com)
+
+    // Check if there's a known TLD in the parts to handle cases like .co.uk
+    for (let i = parts.length - 2; i > 0; i--) {
+        if (KnownTlds.includes(parts.slice(i).join('.'))) {
+        domain = parts.slice(i - 1).join('.');
+        break;
+        }
     }
-    return {
-        ...c,
-        host: parts.join('.'),
-    };
+
+    // Rebuild the host with the new subdomain
+    c.host = subdomain ? `${subdomain}.${domain}` : domain;
+
+    // Adjust the authority if it was originally present
+    if (c.authority) {
+        const port = c.port ? `:${c.port}` : '';
+        const userInfo = c.userInfo && c.userInfo.username ? `${c.userInfo.username}:${c.userInfo.password}@` : '';
+        c.authority = `${userInfo}${c.host}${port}`;
+    }
+
+    return c;
 }
 
 /**
