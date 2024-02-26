@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "scripts": {
     "test": "bun test",
-    "build": "bun build.ts"
+    "build": "bun build.ts",
+    "release": "release-it"
   },
   "description": "A JavaScript library for parsing, resolving, and stringifying Uniform Resource Identifiers (URIs).",
   "license": "MIT",
