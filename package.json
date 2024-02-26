@@ -33,5 +33,34 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "keywords": []
+  "keywords": [
+    "URI",
+    "Uniform Resource Identifier",
+    "URL",
+    "Parsing",
+    "Resolution",
+    "JavaScript",
+    "Library",
+    "Package",
+    "npm",
+    "yarn",
+    "ES modules",
+    "Module",
+    "Lightweight",
+    "Efficient",
+    "Utility",
+    "Syntax",
+    "Usage",
+    "Examples",
+    "API",
+    "Functions",
+    "Components",
+    "String",
+    "Parsing",
+    "Resolving",
+    "JavaScript",
+    "TypeScript",
+    "Open Source",
+    "MIT License"
+  ]
 }
