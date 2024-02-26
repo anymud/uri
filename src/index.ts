@@ -12,8 +12,8 @@ interface URLParams {
     username: string;
 }
 
-export type URLSearchParamsValue = string | number | boolean | null | undefined | Array<string | number | boolean | null | undefined>;
-export type URLSearchParamsInput = URLSearchParams | Record<string, URLSearchParamsValue> | string;
+export type URLSearchValue = string | number | boolean | null | undefined | Array<string | number | boolean | null | undefined>;
+export type URLSearchInput = URLSearchParams | Record<string, URLSearchValue> | string;
 export type URLInput = string | URL | { toString(): string } | Partial<URLParams> & ({ protocol: string, host: string } | { protocol: string, hostname: string });
 
 /**
@@ -129,32 +129,6 @@ export function setSubdomain(url: URLInput, subdomain: string, tlds: string[] = 
   return urlObj;
 }
 
-/**
- * Set the path of a URI.
- * 
- * @param url A given URI components object or URI string
- * @param path The new path to set
- * @returns A new uri components object with the path set to the given value
- */
-export function setPathname(url: URLInput, path: string): URL {
-    const u = toURL(url);
-    u.pathname = path;
-    return u;
-}
-
-
-/**
- * Set the host of a URI.
- * @param url A given URI components object or URI string
- * @param host The new host to set
- * @returns A new uri components object with the host set to the given value
- */
-export function setHost(url: URLInput, host: string): URL {
-    const u = toURL(url);
-    u.host = host;
-    return u;
-}
-
 
 /**
  * Converts the given input to a URLSearchParams object.
@@ -162,7 +136,7 @@ export function setHost(url: URLInput, host: string): URL {
  * @returns A URLSearchParams object
  * @throws If the input type is not supported
  */
-export function toURLSearchParams(search: URLSearchParamsInput): URLSearchParams {
+export function toURLSearchParams(search: URLSearchInput): URLSearchParams {
   // Directly return the input if it's already a URLSearchParams object.
   if (search instanceof URLSearchParams) {
     return search;
@@ -208,7 +182,7 @@ export type QueryMergeMode = 'replace' | 'append';
  * @param mode The merge mode
  * @returns The modified query string from query1
  */
-export function mergeURLSearchParams(query1: URLSearchParamsInput, query2: URLSearchParamsInput, mode: QueryMergeMode = 'replace'): URLSearchParams {
+export function mergeURLSearchParams(query1: URLSearchInput, query2: URLSearchInput, mode: QueryMergeMode = 'replace'): URLSearchParams {
     const q1 = toURLSearchParams(query1);
     const q2 = toURLSearchParams(query2);
     if (mode === 'replace') {
@@ -219,13 +193,41 @@ export function mergeURLSearchParams(query1: URLSearchParamsInput, query2: URLSe
 }
 
 /**
- * Apply URLSearchParams to a URL
+ * Apply a new search params to a URL
  * @param url The URL to apply the search params to
  * @param search The search params to apply
+ * @param mode The merge mode
  * @returns The modified URL from url
  */
-export function applyURLSearchParams(url: URLInput, search: URLSearchParamsInput): URL {
+export function applySearch(url: URLInput, search: URLSearchInput, mode: QueryMergeMode = 'replace'): URL {
     const u = toURL(url);
     u.search = mergeURLSearchParams(u.search, search).toString();
     return u;
 }
+
+/**
+ * Set the path of a URI.
+ * 
+ * @param url A given URI components object or URI string
+ * @param path The new path to set
+ * @returns A new uri components object with the path set to the given value
+ */
+export function applyPathname(url: URLInput, path: string): URL {
+  const u = toURL(url);
+  u.pathname = path;
+  return u;
+}
+
+
+/**
+* Set the host of a URI.
+* @param url A given URI components object or URI string
+* @param host The new host to set
+* @returns A new uri components object with the host set to the given value
+*/
+export function applyHost(url: URLInput, host: string): URL {
+  const u = toURL(url);
+  u.host = host;
+  return u;
+}
+
