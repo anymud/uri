@@ -28,7 +28,8 @@
   "devDependencies": {
     "@anymud/bun-plugin-dts": "^1.0.2",
     "@anymud/utils": "^0.0.2",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "release-it": "^17.1.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
