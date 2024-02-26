@@ -6,7 +6,7 @@
     "test": "bun test",
     "build": "bun build.ts"
   },
-  "description": "uri",
+  "description": "A JavaScript library for parsing, resolving, and stringifying Uniform Resource Identifiers (URIs).",
   "license": "MIT",
   "repository": "https://github.com/anymud/uri",
   "private": false,
