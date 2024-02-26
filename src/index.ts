@@ -286,6 +286,34 @@ export function getSubdomain(components: UriComponentsInput, tlds: string[] = Kn
 }
 
 /**
+ * set the subdomain of a URI.
+ * @param components A uri components object or uri string
+ * @param subdomain The new subdomain to set
+ * @returns A new uri components object with the subdomain set to the given value
+ */
+export function setSubdomain(components: UriComponentsInput, subdomain: string): UriComponents {
+    const c = resolveUriComponents(components);
+    const host = c.host;
+    if (!host) return c;
+    const parts = host.split('.');
+    if (parts.length <= 2) {
+        return {
+            ...c,
+            host: subdomain,
+        };
+    }
+    if (KnownTlds.includes(parts[parts.length - 2])) {
+        parts.splice(0, parts.length - 2, subdomain);
+    } else {
+        parts.splice(0, parts.length - 1, subdomain);
+    }
+    return {
+        ...c,
+        host: parts.join('.'),
+    };
+}
+
+/**
  * Set the path of a URI.
  * 
  * @param components A uri components object or uri string
