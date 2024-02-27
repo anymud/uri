@@ -16,11 +16,14 @@ export type URLSearchValue = string | number | boolean | null | undefined | Arra
 export type URLSearchInput = URLSearchParams | Record<string, URLSearchValue> | string;
 export type URLInput = string | URL | { toString(): string } | Partial<URLParams> & ({ protocol: string, host: string } | { protocol: string, hostname: string });
 
+
 /**
- * Convert a given input to a URL object, resolving against an optional base URL.
- * @param input The input to convert to a URL object.
- * @param base An optional base URL to resolve against.
- * @returns A new URL object.
+ * Converts the input into a URL object.
+ * 
+ * @param input - The input to convert into a URL. It can be a URL object, a string, or an object with URL properties.
+ * @param base - The base URL to resolve relative URLs against.
+ * @returns The converted URL object.
+ * @throws Error if the input is not a valid URL.
  */
 export function toURL(input: URLInput, base?: URLInput): URL {
     if (input instanceof URL) {
@@ -174,45 +177,55 @@ export function toURLSearchParams(search: URLSearchInput): URLSearchParams {
   throw new Error('Unsupported search params input type.');
 }
 
+/**
+ * Represents the merge mode for query parameters.
+ * - 'replace': Replaces the existing query parameters with the new ones.
+ * - 'append': Appends the new query parameters to the existing ones.
+ */
 export type QueryMergeMode = 'replace' | 'append';
-/** 
- * Merge query parameters
- * @param query1 The first query string
- * @param query2 The second query string
- * @param mode The merge mode
- * @returns The modified query string from query1
+
+/**
+ * Merges two URL search parameters objects into a single URLSearchParams object.
+ * @param query1 - The first URL search parameters object.
+ * @param query2 - The second URL search parameters object.
+ * @param mode - The merge mode. Defaults to 'replace'.
+ * @returns The merged URLSearchParams object.
  */
 export function mergeURLSearchParams(query1: URLSearchInput, query2: URLSearchInput, mode: QueryMergeMode = 'replace'): URLSearchParams {
     const q1 = toURLSearchParams(query1);
     const q2 = toURLSearchParams(query2);
-    if (mode === 'replace') {
-        q2.forEach((value, key) => q1.delete(key));
+    for (const [key, value] of q2) {
+        if (mode === 'replace') {
+          q1.set(key, value);
+        } else {
+          q1.append(key, value);
+        }
     }
-    q2.forEach((value, key) => q1.append(key, value));
     return q1;
 }
 
+
 /**
- * Apply a new search params to a URL
- * @param url The URL to apply the search params to
- * @param search The search params to apply
- * @param mode The merge mode
- * @returns The modified URL from url
+ * Merges the search parameters of a URL with the provided search parameters.
+ * @param url - The URL to merge the search parameters into.
+ * @param search - The search parameters to merge into the URL.
+ * @param mode - The merge mode. Defaults to 'replace'.
+ * @returns The URL with the merged search parameters.
  */
-export function applySearch(url: URLInput, search: URLSearchInput, mode: QueryMergeMode = 'replace'): URL {
+export function mergeSearch(url: URLInput, search: URLSearchInput, mode: QueryMergeMode = 'replace'): URL {
     const u = toURL(url);
-    u.search = mergeURLSearchParams(u.search, search).toString();
+    u.search = mergeURLSearchParams(u.search, search, mode).toString();
     return u;
 }
 
 /**
- * Set the path of a URI.
+ * Set the given path to the URL's pathname.
  * 
- * @param url A given URI components object or URI string
- * @param path The new path to set
- * @returns A new uri components object with the path set to the given value
+ * @param url - The URL to modify.
+ * @param path - The path to apply to the URL's pathname.
+ * @returns A new URL object with the modified pathname.
  */
-export function applyPathname(url: URLInput, path: string): URL {
+export function setPathname(url: URLInput, path: string): URL {
   const u = toURL(url);
   u.pathname = path;
   return u;
@@ -220,12 +233,12 @@ export function applyPathname(url: URLInput, path: string): URL {
 
 
 /**
-* Set the host of a URI.
-* @param url A given URI components object or URI string
-* @param host The new host to set
-* @returns A new uri components object with the host set to the given value
-*/
-export function applyHost(url: URLInput, host: string): URL {
+ * Set the specified host to the given URL.
+ * @param url - The URL to modify.
+ * @param host - The new host value to set.
+ * @returns The modified URL with the updated host.
+ */
+export function setHost(url: URLInput, host: string): URL {
   const u = toURL(url);
   u.host = host;
   return u;
